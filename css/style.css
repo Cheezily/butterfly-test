@@ -1,0 +1,11 @@
+html, body {
+  overflow-x: hidden;
+}
+
+.hidden-loader {
+  display: none;
+}
+
+.butterfly {
+  position: absolute;
+}
