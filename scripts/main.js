@@ -2,10 +2,11 @@ const MAX_BUTTERFLIES = 10
 const TURN_FREQUENCY = 500
 const UPDATE_FREQUENCY = 10
 
+
 const MARGIN = 1
 const MAX_WIDTH = Math.floor(window.innerWidth * MARGIN)
 const MAX_HEIGHT = Math.floor(window.innerHeight * MARGIN)
-const CENTER = [MAX_WIDTH, MAX_HEIGHT]
+const CENTER = [MAX_WIDTH / 2, MAX_HEIGHT / 2]
 
 console.log(MAX_WIDTH)
 console.log(MAX_HEIGHT)
@@ -16,6 +17,8 @@ function Butterfly(xPos, yPos, direction, color, speed) {
   this.direction = direction
   this.color = color
   this.speed = speed
+  this.turn_direction = (Math.floor(Math.random() * 4) - 2) - 2
+  this.turn_sharpness = Math.random() / 2
   this.direction_fix = false
 }
 
@@ -57,35 +60,36 @@ function move_butterflies() {
       butterflies[i].direction = butterflies[i].direction + 360
     }
 
-    if(butterflies[i].xPos + 250 > MAX_WIDTH || butterflies[i].yPos + 340 > MAX_HEIGHT
+    if(butterflies[i].xPos > MAX_WIDTH || butterflies[i].yPos + 200 > MAX_HEIGHT
       || butterflies[i].xPos - 1 < 0 || butterflies[i].yPos - 1 < 0) {
-        
-        console.log('gone', butterflies[i].direction)
 
         if(!butterflies[i].direction_fix) {
+          console.log('gone', butterflies[i].direction_fix)
+          console.log(CENTER[0], CENTER[1])
+
           if(CENTER[0] < butterflies[i].xPos && CENTER[1] > butterflies[i].yPos) {
             butterflies[i].direction_fix = 270 - Math.floor(Math.random() * 90)
-            console.log('lower left')
+            console.log('turning toward lower left')
           }
 
           if(CENTER[0] < butterflies[i].xPos && CENTER[1] < butterflies[i].yPos) {
             butterflies[i].direction_fix = 360 - Math.floor(Math.random() * 90)
-            console.log('upper left')
+            console.log('turning toward upper left')
           }
 
-          if(CENTER[0] < butterflies[i].xPos && CENTER[1] > butterflies[i].yPos) {
+          if(CENTER[0] > butterflies[i].xPos && CENTER[1] > butterflies[i].yPos) {
             butterflies[i].direction_fix = 180 - Math.floor(Math.random() * 90)
-            console.log('upper right')
+            console.log('turning toward lower right')
           }
 
-          if(CENTER[0] < butterflies[i].xPos && CENTER[1] < butterflies[i].yPos) {
+          if(CENTER[0] > butterflies[i].xPos && CENTER[1] < butterflies[i].yPos) {
             butterflies[i].direction_fix = 90 - Math.floor(Math.random() * 90)
-            console.log('lower right')
+            console.log('turning toward upper left')
           }
         }
 
         if(butterflies[i].direction_fix) {
-          butterflies[i].direction = butterflies[i].direction + 1
+          butterflies[i].direction = butterflies[i].direction + 3
           console.log('turning')
         }
 
@@ -104,7 +108,7 @@ function move_butterflies() {
     butterflies[i].xPos += Math.sin(rad) * butterflies[i].speed 
     butterflies[i].yPos += Math.cos(rad) * butterflies[i].speed * -1
 
-    // element.style.transform = "rotate(" + butterflies[i].direction + "deg)"
+    element.style.transform = "rotate(" + butterflies[i].direction + "deg)"
     element.style.left = butterflies[i].xPos + 'px'
     element.style.top = butterflies[i].yPos + 'px'
     
@@ -114,6 +118,10 @@ function move_butterflies() {
       rad.toFixed(2),
       butterflies[i].direction_fix)
   }
+}
+
+function regular_turn(butterfly) {
+  
 }
 
 make_butterflies(MAX_BUTTERFLIES)
