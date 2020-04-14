@@ -1,14 +1,16 @@
-const MAX_BUTTERFLIES = 50
+const MAX_BUTTERFLIES = 25
 const TURN_FREQUENCY = 500
 const UPDATE_FREQUENCY = 20
-const DIRECTION_CHANGE_CHANCE = .03
-const MIN_SPEED = UPDATE_FREQUENCY / 4
-const SPEED_VARIANCE = 3
+// const UPDATE_FREQUENCY = Math.floor(1000 / 60)
+const DIRECTION_CHANGE_CHANCE = .01
+const MIN_SPEED = UPDATE_FREQUENCY / 16
+const SPEED_VARIANCE = 2
 const BUTTERFLY_COLORS = [
-  'white',
-  'grey',
+  'green',
+  'red',
   'blue',
-  'orange'
+  'orange',
+  'yellow'
 ]
 const MARGIN = 1
 const MAX_WIDTH = Math.floor(window.innerWidth * MARGIN)
@@ -20,7 +22,8 @@ let trails = []
 console.log(MAX_WIDTH)
 console.log(MAX_HEIGHT)
 
-function Butterfly(xPos, yPos, direction, color, speed) {
+function Butterfly(id, xPos, yPos, direction, color, speed) {
+  this.id = id
   this.xPos = xPos
   this.yPos = yPos
   this.direction = direction
@@ -36,19 +39,19 @@ let butterflies = []
 
 function make_butterflies(num_butterflies) {
   for(let i = 0; i < MAX_BUTTERFLIES; i++) {
-    let xPos = Math.floor(Math.random() * MAX_WIDTH *.7)
-    let yPos = Math.floor(Math.random() * MAX_HEIGHT * .7) + 100
+    let xPos = CENTER[0]
+    let yPos = CENTER[1]
     let direction = Math.floor(Math.random() * 360)
     let color = BUTTERFLY_COLORS[Math.floor(Math.random() * BUTTERFLY_COLORS.length)]
     let speed = (Math.random() * SPEED_VARIANCE) + MIN_SPEED
   
-    butterflies.push(new Butterfly(xPos, yPos, direction, color, speed))
+    butterflies.push(new Butterfly(i, xPos, yPos, direction, color, speed))
   
     let element = document.createElement('img')
     document.body.appendChild(element)
     element.className = 'butterfly'
     element.setAttribute("id", "butterfly_" + i)
-    element.setAttribute("src", "images/arrow_" + color + ".png")
+    element.setAttribute("src", "images/butterfly_" + color + ".png")
     element.style.transform = "rotate(" + direction + "deg)"
     element.style.left = xPos + 'px'
     element.style.top = yPos + 'px'
@@ -56,11 +59,11 @@ function make_butterflies(num_butterflies) {
 }
 
 
-console.log(butterflies)
+// console.log(butterflies)
 
 function move_butterflies() {
   for(let i = 0; i < butterflies.length; i++) {
-    let element = document.getElementById('butterfly_' + i)
+    let element = document.getElementById('butterfly_' + butterflies[i].id)
     if(butterflies[i].direction > 360) {
       butterflies[i].direction = butterflies[i].direction - 360
     }
@@ -104,6 +107,7 @@ function regular_turn(butterfly) {
   if(Math.random() < DIRECTION_CHANGE_CHANCE) {
     butterfly.turn_direction = (Math.floor(Math.random() * 2) - .5) * 2
     butterfly.turn_sharpness = direction_sharpness()
+    flap_once(butterfly)
   }
   butterfly.direction += butterfly.turn_sharpness * butterfly.turn_direction
 }
@@ -112,43 +116,53 @@ function create_trails(butterfly) {
 
 }
 
+function flap_once(butterfly, times) {
+  let element = document.getElementById("butterfly_" + butterfly.id)
+  element.setAttribute("src", "images/butterfly_" + butterfly.color + "_flap.png")
+
+  for(let i = 0; i < (Math.random() * 6); i++) {
+    let delay = Math.max(Math.random() * 250, 100)
+    setTimeout(function() {
+      element.setAttribute("src", "images/butterfly_" + butterfly.color + "_flap.png")
+    }, (i * delay))
+    setTimeout(function() {
+      element.setAttribute("src", "images/butterfly_" + butterfly.color + ".png")
+    }, (i * delay) + 100)
+  }
+}
+
 function return_to_center(butterfly) {
   if(!butterfly.direction_fix) {
     // hits lower right corner
     if(CENTER[0] < butterfly.xPos && CENTER[1] > butterfly.yPos) {
-      // butterfly.direction_fix = 270 - Math.floor(Math.random() * 90)
       butterfly.direction_fix = 335
     }
 
     // hits upper right corner
     if(CENTER[0] < butterfly.xPos && CENTER[1] < butterfly.yPos) {
-      // butterfly.direction_fix = 360 - Math.floor(Math.random() * 90)
       butterfly.direction_fix = 215
     }
 
     //hits upper left corner
     if(CENTER[0] > butterfly.xPos && CENTER[1] > butterfly.yPos) {
-      // butterfly.direction_fix = 180 - Math.floor(Math.random() * 90)
       butterfly.direction_fix = 135
     }
 
     //hits lower left corner
     if(CENTER[0] > butterfly.xPos && CENTER[1] < butterfly.yPos) {
-      // butterfly.direction_fix = 90 - Math.floor(Math.random() * 90)
       butterfly.direction_fix = 45
     }
+
+    flap_once(butterfly)
   }
 
   if(butterfly.direction_fix) {
-    // butterfly.direction_fix_count++
-    // butterfly.direction += (10 / butterfly.direction_fix_count) * 2
     butterfly.direction += 10
   }
 
   if(butterfly.direction_fix 
     && Math.abs(butterfly.direction - butterfly.direction_fix) < 10) {
     butterfly.direction_fix = null
-    // butterfly.direction -= 20
   }
 }
 
