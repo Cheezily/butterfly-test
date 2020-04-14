@@ -1,4 +1,4 @@
-const MAX_BUTTERFLIES = 10
+const MAX_BUTTERFLIES = 5
 const TURN_FREQUENCY = 500
 const UPDATE_FREQUENCY = 20
 const DIRECTION_CHANGE_CHANCE = .05
@@ -36,7 +36,7 @@ let butterflies = []
 function make_butterflies(num_butterflies) {
   for(let i = 0; i < MAX_BUTTERFLIES; i++) {
     let xPos = Math.floor(Math.random() * MAX_WIDTH *.7)
-    let yPos = Math.floor(Math.random() * MAX_HEIGHT * .7)
+    let yPos = Math.floor(Math.random() * MAX_HEIGHT * .7) + 100
     let direction = Math.floor(Math.random() * 360)
     let color = BUTTERFLY_COLORS[Math.floor(Math.random() * BUTTERFLY_COLORS.length)]
     let speed = (Math.random() * SPEED_VARIANCE) + MIN_SPEED
@@ -67,13 +67,14 @@ function move_butterflies() {
       butterflies[i].direction = butterflies[i].direction + 360
     }
 
-    if(butterflies[i].xPos > MAX_WIDTH - 50
-      || butterflies[i].yPos + 120 > MAX_HEIGHT
+    if(butterflies[i].xPos > MAX_WIDTH - 250
+      || butterflies[i].yPos + 150 > MAX_HEIGHT
       || butterflies[i].xPos < 0 
       || butterflies[i].yPos - 100 < 0) {
         return_to_center(butterflies[i])
     } else {
       butterflies[i].direction_fix = null
+      butterflies[i].speed = (Math.random() * SPEED_VARIANCE) + MIN_SPEED
     }
 
     let rad = (butterflies[i].direction) * (Math.PI / 180)
@@ -126,11 +127,12 @@ function return_to_center(butterfly) {
   }
 
   if(butterfly.direction_fix) {
-    butterfly.direction = butterfly.direction + butterfly.speed * 1.6
+    Math.max(butterfly.direction = butterfly.direction + butterfly.speed +
+    (Math.abs(butterfly.direction - butterfly.direction_fix) / 100), 1)
   }
 
   if(butterfly.direction_fix 
-    && Math.abs(butterfly.direction - butterfly.direction_fix) - 20) {
+    && Math.abs(butterfly.direction - butterfly.direction_fix) - 50) {
     butterfly.direction_fix = null
   }
 }
