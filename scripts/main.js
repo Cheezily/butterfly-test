@@ -1,7 +1,7 @@
-const MAX_BUTTERFLIES = 5
+const MAX_BUTTERFLIES = 50
 const TURN_FREQUENCY = 500
 const UPDATE_FREQUENCY = 20
-const DIRECTION_CHANGE_CHANCE = .07
+const DIRECTION_CHANGE_CHANCE = .03
 const MIN_SPEED = UPDATE_FREQUENCY / 4
 const SPEED_VARIANCE = 3
 const BUTTERFLY_COLORS = [
@@ -27,8 +27,9 @@ function Butterfly(xPos, yPos, direction, color, speed) {
   this.color = color
   this.speed = speed
   this.turn_direction = (Math.floor(Math.random() * 2) - .5) * 2
-  this.turn_sharpness = Math.random() * 1.5
+  this.turn_sharpness = direction_sharpness()
   this.direction_fix = false
+  // this.direction_fix_count = 0
 }
 
 let butterflies = []
@@ -67,7 +68,7 @@ function move_butterflies() {
       butterflies[i].direction = butterflies[i].direction + 360
     }
 
-    if(butterflies[i].xPos > MAX_WIDTH - 250
+    if(butterflies[i].xPos > MAX_WIDTH - 50
       || butterflies[i].yPos + 150 > MAX_HEIGHT
       || butterflies[i].xPos < 0 
       || butterflies[i].yPos - 100 < 0) {
@@ -95,10 +96,14 @@ function move_butterflies() {
   }
 }
 
+function direction_sharpness() {
+  return Math.random() * 2
+}
+
 function regular_turn(butterfly) {
   if(Math.random() < DIRECTION_CHANGE_CHANCE) {
     butterfly.turn_direction = (Math.floor(Math.random() * 2) - .5) * 2
-    butterfly.turn_sharpness = Math.random() * .03
+    butterfly.turn_sharpness = direction_sharpness()
   }
   butterfly.direction += butterfly.turn_sharpness * butterfly.turn_direction
 }
@@ -109,30 +114,41 @@ function create_trails(butterfly) {
 
 function return_to_center(butterfly) {
   if(!butterfly.direction_fix) {
+    // hits lower right corner
     if(CENTER[0] < butterfly.xPos && CENTER[1] > butterfly.yPos) {
-      butterfly.direction_fix = 270 - Math.floor(Math.random() * 90)
+      // butterfly.direction_fix = 270 - Math.floor(Math.random() * 90)
+      butterfly.direction_fix = 335
     }
 
+    // hits upper right corner
     if(CENTER[0] < butterfly.xPos && CENTER[1] < butterfly.yPos) {
-      butterfly.direction_fix = 360 - Math.floor(Math.random() * 90)
+      // butterfly.direction_fix = 360 - Math.floor(Math.random() * 90)
+      butterfly.direction_fix = 215
     }
 
+    //hits upper left corner
     if(CENTER[0] > butterfly.xPos && CENTER[1] > butterfly.yPos) {
-      butterfly.direction_fix = 180 - Math.floor(Math.random() * 90)
+      // butterfly.direction_fix = 180 - Math.floor(Math.random() * 90)
+      butterfly.direction_fix = 135
     }
 
+    //hits lower left corner
     if(CENTER[0] > butterfly.xPos && CENTER[1] < butterfly.yPos) {
-      butterfly.direction_fix = 90 - Math.floor(Math.random() * 90)
+      // butterfly.direction_fix = 90 - Math.floor(Math.random() * 90)
+      butterfly.direction_fix = 45
     }
   }
 
   if(butterfly.direction_fix) {
-    butterfly.direction += 1.4 * butterfly.speed
+    // butterfly.direction_fix_count++
+    // butterfly.direction += (10 / butterfly.direction_fix_count) * 2
+    butterfly.direction += 10
   }
 
   if(butterfly.direction_fix 
-    && Math.abs(butterfly.direction - butterfly.direction_fix) - 50) {
+    && Math.abs(butterfly.direction - butterfly.direction_fix) < 10) {
     butterfly.direction_fix = null
+    // butterfly.direction -= 20
   }
 }
 
