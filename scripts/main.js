@@ -1,7 +1,7 @@
 const MAX_BUTTERFLIES = 5
 const TURN_FREQUENCY = 500
 const UPDATE_FREQUENCY = 20
-const DIRECTION_CHANGE_CHANCE = .05
+const DIRECTION_CHANGE_CHANCE = .07
 const MIN_SPEED = UPDATE_FREQUENCY / 4
 const SPEED_VARIANCE = 3
 const BUTTERFLY_COLORS = [
@@ -127,8 +127,7 @@ function return_to_center(butterfly) {
   }
 
   if(butterfly.direction_fix) {
-    Math.max(butterfly.direction = butterfly.direction + butterfly.speed +
-    (Math.abs(butterfly.direction - butterfly.direction_fix) / 100), 1)
+    butterfly.direction += 1.4 * butterfly.speed
   }
 
   if(butterfly.direction_fix 
